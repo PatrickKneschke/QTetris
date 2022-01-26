@@ -9,7 +9,7 @@ namespace UI {
 	class QTetris;
 }
 
-class QTetris : public Widget {
+class QTetris : public QWidget {
 	Q_OBJECT
 public:
 	QTetris(QWidget *parent=nullptr);

@@ -4,10 +4,12 @@
 
 
 QTetris::QTetris(QWidget *parent) :
-	QWIdget(parent),
+	QWidget(parent),
 	ui(new UI::QTetris())
 {
-	ui->setupUI();
+	setMinimumSize(720, 720);
+	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+	ui->setupUI(this);
 }
 
 

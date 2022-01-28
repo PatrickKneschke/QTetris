@@ -7,7 +7,7 @@ QTetris::QTetris(QWidget *parent) :
 	QWidget(parent),
 	ui(new UI::QTetris())
 {
-	setMinimumSize(720, 720);
+	setMinimumSize(720, 920);
 	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 	ui->setupUI(this);
 }

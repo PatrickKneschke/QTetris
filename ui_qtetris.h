@@ -40,21 +40,23 @@ public:
 		
 		parent->setLayout(mainLayout);
 		
+		/*
 		for(int r=0; r<14; r++)
 			mainLayout->setRowStretch(r, 1);
-		for(int c=0; c<10; c++)
+		for(int c=0; c<9; c++)
 			mainLayout->setColumnStretch(c, 1);
+		*/
 		
 		mainLayout->addWidget(titleLabel, 		0, 0,  1, 6);
 		mainLayout->addWidget(mainView, 		1, 0, 12, 6);
-		mainLayout->addWidget(nextPieceLabel,	1, 6,  1, 4);
-		mainLayout->addWidget(nextPieceView,	2, 7,  2, 2);
-		mainLayout->addWidget(scoreLabel, 		6, 6,  1, 4);
-		mainLayout->addWidget(scoreLCD, 		7, 6,  1, 4);
-		mainLayout->addWidget(linesLabel, 		8, 6,  1, 4);
-		mainLayout->addWidget(linesLCD, 		9, 6,  1, 4);
-		mainLayout->addWidget(levelLabel, 	   10, 6,  1, 4);
-		mainLayout->addWidget(levelLCD, 	   11, 6,  1, 4);
+		mainLayout->addWidget(nextPieceLabel,	1, 6,  1, 3);
+		mainLayout->addWidget(nextPieceView,	2, 6,  3, 3);
+		mainLayout->addWidget(scoreLabel, 		6, 6,  1, 3);
+		mainLayout->addWidget(scoreLCD, 		7, 6,  1, 3);
+		mainLayout->addWidget(linesLabel, 		8, 6,  1, 3);
+		mainLayout->addWidget(linesLCD, 		9, 6,  1, 3);
+		mainLayout->addWidget(levelLabel, 	   10, 6,  1, 3);
+		mainLayout->addWidget(levelLCD, 	   11, 6,  1, 3);
 	}
 	
 	

@@ -24,6 +24,8 @@ const QColor Piece::colorTable[6]  = {
 	QColor(230, 230, 25), QColor(230, 25, 230), QColor(25, 230, 230)
 };
 
+int Piece::blockSize = 50;
+
 
 Piece::Piece(const int &x, const int &y, Shape s) : 
 	shape(s), 

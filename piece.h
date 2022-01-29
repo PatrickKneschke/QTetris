@@ -24,7 +24,7 @@ public:
 	QRectF boundingRect() const override;
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;	
 	
-	static constexpr int blockSize = 50;	
+	static int blockSize;	
 	int blockPos[4][2];
 	int left, right, top, bottom;
 	

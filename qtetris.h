@@ -2,6 +2,8 @@
 #define QTETRIS_H
 
 
+#include "piece.h"
+#include <QGraphicsScene>
 #include <QWidget>
 
 
@@ -16,7 +18,16 @@ public:
 	~QTetris();
 
 private:
+	void initBoard();
+
+
 	UI::QTetris *ui;
+	QGraphicsScene *mainScene, *nextPieceScene;
+	Piece *currPiece, *nextPiece;
+	
+	int boardWidth, boardHeight;
+				   
+	
 };
 
 

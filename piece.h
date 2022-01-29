@@ -5,6 +5,7 @@
 #include <QtCore>
 #include <QColor>
 #include <QGraphicsItem>
+#include <QGraphicsScene>
 #include <QPainter>
 
 
@@ -16,13 +17,13 @@ class Piece : public QGraphicsItem {
 	static const QColor colorTable[6];
 
 public:
+	QRectF boundingRect() const override;
+	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;	
+	
 	static Piece* newPiece(const int &x, const int &y);	
 	
 	void move(const int &dx, const int &dy);
 	void rotate();	
-
-	QRectF boundingRect() const override;
-	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;	
 	
 	static int blockSize;	
 	int blockPos[4][2];

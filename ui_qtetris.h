@@ -39,14 +39,7 @@ public:
 		levelLCD 		= new QLCDNumber(2, parent);
 		
 		parent->setLayout(mainLayout);
-		
-		/*
-		for(int r=0; r<14; r++)
-			mainLayout->setRowStretch(r, 1);
-		for(int c=0; c<9; c++)
-			mainLayout->setColumnStretch(c, 1);
-		*/
-		
+				
 		mainLayout->addWidget(titleLabel, 		0, 0,  1, 6);
 		mainLayout->addWidget(mainView, 		1, 0, 12, 6);
 		mainLayout->addWidget(nextPieceLabel,	1, 6,  1, 3);

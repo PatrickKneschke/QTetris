@@ -29,15 +29,15 @@ int Piece::blockSize = 50;
 
 Piece::Piece(const int &x, const int &y, Shape s) : 
 	shape(s), 
-	left(0), right(0), top(0), bottom(0)
+	left(INT_MAX), right(INT_MIN), top(INT_MAX), bottom(INT_MIN)
 {
 	for(int i=0; i<4; i++) {
 		blockPos[i][0] = x + shapePosTable[shape][i][0];
 		blockPos[i][1] = y + shapePosTable[shape][i][1];
 		left   = qMin(left,   blockPos[i][0]);
-		right  = qMax(right,  blockPos[i][0]);
+		right  = qMax(right,  blockPos[i][0]+1);
 		top    = qMin(top,    blockPos[i][1]);
-		bottom = qMax(bottom, blockPos[i][1]);
+		bottom = qMax(bottom, blockPos[i][1]+1);
 	}
 }
 
@@ -48,9 +48,13 @@ QRectF Piece::boundingRect() const {
 
 
 void Piece::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+	painter->drawRect(boundingRect());
+
 	painter->setBrush(color);
 	for(int i=0; i<4; i++)
 		painter->drawRect(blockPos[i][0]*blockSize, blockPos[i][1]*blockSize, blockSize, blockSize);
+		
+
 }
 
 

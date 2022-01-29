@@ -4,6 +4,7 @@
 
 #include "piece.h"
 #include <QGraphicsScene>
+#include <QKeyEvent>
 #include <QWidget>
 
 
@@ -16,13 +17,22 @@ class QTetris : public QWidget {
 public:
 	QTetris(QWidget *parent=nullptr);
 	~QTetris();
-
+	
 private:
-	void initBoard();
+	void keyPressEvent(QKeyEvent *event) override;
 
+	void initBoard();
+	
+	void moveLeft();
+	void moveRight();
+	void moveDown();
+	void drop();
+	void rotate();
+	
 
 	UI::QTetris *ui;
 	QGraphicsScene *mainScene, *nextPieceScene;
+	QTimer *updateTimer;
 	Piece *currPiece, *nextPiece;
 	
 	int boardWidth, boardHeight;

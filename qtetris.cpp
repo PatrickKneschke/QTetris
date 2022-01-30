@@ -92,9 +92,12 @@ void QTetris::moveDown() {
 void QTetris::drop() {
 	//TODO
 	currPiece->move(0, boardHeight-currPiece->bottom);
+	mainScene->update(0, 0, boardWidth*Piece::blockSize, boardHeight*Piece::blockSize);
 }
 
 
 void QTetris::rotate() {
 	//TODO
+	currPiece->rotate();
+	mainScene->update(0, 0, boardWidth*Piece::blockSize, boardHeight*Piece::blockSize);
 }

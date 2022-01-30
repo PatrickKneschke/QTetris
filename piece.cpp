@@ -27,17 +27,18 @@ const QColor Piece::colorTable[6]  = {
 int Piece::blockSize = 50;
 
 
-Piece::Piece(const int &x, const int &y, Shape s) : 
-	shape(s), 
-	left(INT_MAX), right(INT_MIN), top(INT_MAX), bottom(INT_MIN)
+Piece::Piece(const int &x_, const int &y_, Shape s) : 
+	x(x_), y(y_),
+	left(INT_MAX), right(INT_MIN), top(INT_MAX), bottom(INT_MIN),
+	shape(s)
 {
 	for(int i=0; i<4; i++) {
-		blockPos[i][0] = x + shapePosTable[shape][i][0];
-		blockPos[i][1] = y + shapePosTable[shape][i][1];
-		left   = qMin(left,   blockPos[i][0]);
-		right  = qMax(right,  blockPos[i][0]+1);
-		top    = qMin(top,    blockPos[i][1]);
-		bottom = qMax(bottom, blockPos[i][1]+1);
+		blockPos[i][0] = shapePosTable[shape][i][0];
+		blockPos[i][1] = shapePosTable[shape][i][1];
+		left   = qMin(left,   x + blockPos[i][0]);
+		right  = qMax(right,  x + blockPos[i][0]+1);
+		top    = qMin(top,    y + blockPos[i][1]);
+		bottom = qMax(bottom, y + blockPos[i][1]+1);
 	}
 }
 
@@ -52,7 +53,7 @@ void Piece::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
 
 	painter->setBrush(color);
 	for(int i=0; i<4; i++)
-		painter->drawRect(blockPos[i][0]*blockSize, blockPos[i][1]*blockSize, blockSize, blockSize);
+		painter->drawRect((x + blockPos[i][0])*blockSize, (y + blockPos[i][1])*blockSize, blockSize, blockSize);
 		
 
 }
@@ -66,10 +67,8 @@ Piece* Piece::newPiece(const int &x, const int &y) {
 
 
 void Piece::move(const int &dx, const int &dy) {
-	for(int i=0; i<4; i++) {
-		blockPos[i][0] += dx;
-		blockPos[i][1] += dy;
-	}
+	x += dx;
+	y += dy;
 	left   += dx;
 	right  += dx;
 	top    += dy;
@@ -88,8 +87,8 @@ void Piece::rotate() {
 		blockPos[i][1] = temp;
 	}
 	temp   = left;
-	left   = -bottom;
-	bottom = right;
-	right  = -top;
-	top    = temp;
+	left   = x - (bottom - y - 1);
+	bottom = y + (right  - x);
+	right  = x - (top    - y - 1);
+	top    = y + (temp   - x);
 }

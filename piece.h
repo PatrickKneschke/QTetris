@@ -25,7 +25,9 @@ public:
 	void move(const int &dx, const int &dy);
 	void rotate();	
 	
-	static int blockSize;	
+	static int blockSize;
+	
+	int x, y;	
 	int blockPos[4][2];
 	int left, right, top, bottom;
 	

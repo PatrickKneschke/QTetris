@@ -67,16 +67,32 @@ void QTetris::initBoard() {
 }
 
 
+void QTetris::getNextPiece() {
+	mainScene->removeItem(currPiece);
+	nextPieceScene->removeItem(nextPiece);
+
+	currPiece = nextPiece;
+	currPiece->moveTo(boardWidth/2, 0);
+	mainScene->addItem(currPiece);
+	
+	nextPiece = Piece::newPiece(2, 2);
+	nextPieceScene->addItem(nextPiece);
+
+	mainScene->update(0, 0, boardWidth*Piece::blockSize, boardHeight*Piece::blockSize);
+	nextPieceScene->update(0, 0, 4*Piece::blockSize, 4*Piece::blockSize);
+}
+
+
 void QTetris::moveLeft() {
 	if(currPiece->left > 0)
-		currPiece->move(-1, 0);
+		currPiece->moveBy(-1, 0);
 	mainScene->update(0, 0, boardWidth*Piece::blockSize, boardHeight*Piece::blockSize);
 }
 
 
 void QTetris::moveRight() {
 	if(currPiece->right < boardWidth)
-		currPiece->move(1, 0);	
+		currPiece->moveBy(1, 0);	
 	mainScene->update(0, 0, boardWidth*Piece::blockSize, boardHeight*Piece::blockSize);
 }
 
@@ -84,15 +100,17 @@ void QTetris::moveRight() {
 void QTetris::moveDown() {
 	// TODO
 	if(currPiece->bottom < boardHeight)
-		currPiece->move(0, 1);
+		currPiece->moveBy(0, 1);
 	mainScene->update(0, 0, boardWidth*Piece::blockSize, boardHeight*Piece::blockSize);
 }
 
 
 void QTetris::drop() {
 	//TODO
-	currPiece->move(0, boardHeight-currPiece->bottom);
-	mainScene->update(0, 0, boardWidth*Piece::blockSize, boardHeight*Piece::blockSize);
+	currPiece->moveBy(0, boardHeight-currPiece->bottom);
+	
+	currPiece->addBlocksToScene(mainScene);	
+	getNextPiece();
 }
 
 

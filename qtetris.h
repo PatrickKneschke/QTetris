@@ -22,6 +22,7 @@ private:
 	void keyPressEvent(QKeyEvent *event) override;
 
 	void initBoard();
+	void getNextPiece();
 	
 	void moveLeft();
 	void moveRight();

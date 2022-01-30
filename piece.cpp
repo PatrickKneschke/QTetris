@@ -66,7 +66,23 @@ Piece* Piece::newPiece(const int &x, const int &y) {
 }
 
 
-void Piece::move(const int &dx, const int &dy) {
+void Piece::addBlocksToScene(QGraphicsScene *scene) {
+	for(int i=0; i<4; i++)
+		scene->addRect((x + blockPos[i][0])*blockSize, (y+blockPos[i][1])*blockSize, blockSize, blockSize, QPen(), QBrush(color));
+}
+
+
+void Piece::moveTo(const int &newX, const int &newY) {
+	left   += newX - x;
+	right  += newX - x;
+	top    += newY - y;
+	bottom += newY - y;
+	x = newX;
+	y = newY;
+}
+
+
+void Piece::moveBy(const int &dx, const int &dy) {
 	x += dx;
 	y += dy;
 	left   += dx;

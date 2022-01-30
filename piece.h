@@ -22,7 +22,10 @@ public:
 	
 	static Piece* newPiece(const int &x, const int &y);	
 	
-	void move(const int &dx, const int &dy);
+	void addBlocksToScene(QGraphicsScene *scene);
+	
+	void moveTo(const int &newX, const int &newY);
+	void moveBy(const int &dx, const int &dy);
 	void rotate();	
 	
 	static int blockSize;

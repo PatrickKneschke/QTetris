@@ -30,11 +30,11 @@ int Piece::blockSize = 50;
 Piece::Piece(const int &x_, const int &y_, Shape s) : 
 	x(x_), y(y_),
 	left(INT_MAX), right(INT_MIN), top(INT_MAX), bottom(INT_MIN),
-	shape(s)
+	pieceShape(s)
 {
 	for(int i=0; i<4; i++) {
-		blockPos[i][0] = shapePosTable[shape][i][0];
-		blockPos[i][1] = shapePosTable[shape][i][1];
+		blockPos[i][0] = shapePosTable[pieceShape][i][0];
+		blockPos[i][1] = shapePosTable[pieceShape][i][1];
 		left   = qMin(left,   x + blockPos[i][0]);
 		right  = qMax(right,  x + blockPos[i][0]+1);
 		top    = qMin(top,    y + blockPos[i][1]);
@@ -48,14 +48,27 @@ QRectF Piece::boundingRect() const {
 }
 
 
+QPainterPath Piece::shape() const {
+	QPainterPath path;
+	for(int i=0; i<4; i++) {
+		path.addRect((x + blockPos[i][0])*blockSize + 1, (y + blockPos[i][1])*blockSize + 1, blockSize - 2, blockSize - 2);
+	}
+	return path;
+}
+
+
 void Piece::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
-	painter->drawRect(boundingRect());
+
+		painter->drawRect(boundingRect());
 
 	painter->setBrush(color);
 	for(int i=0; i<4; i++)
 		painter->drawRect((x + blockPos[i][0])*blockSize, (y + blockPos[i][1])*blockSize, blockSize, blockSize);
 		
-
+		
+		painter->setPen(QColor(200, 200, 200));
+		painter->drawPath(shape());
+		painter->setPen(QColor());
 }
 
 
@@ -92,8 +105,26 @@ void Piece::moveBy(const int &dx, const int &dy) {
 }
 
 
-void Piece::rotate() {
-	if(shape == O_SHAPE)
+void Piece::rotateLeft() {
+	if(pieceShape == O_SHAPE)
+		return;
+
+	int temp;
+	for(int i=0; i<4; i++) {
+		temp = blockPos[i][0];
+		blockPos[i][0] = blockPos[i][1];
+		blockPos[i][1] = -temp;
+	}
+	temp   = left;
+	left   = x + (top    - y);
+	top    = y - (right  - x - 1);
+	right  = x + (bottom - y);
+	bottom = y - (temp   - x - 1);
+}
+
+
+void Piece::rotateRight() {
+	if(pieceShape == O_SHAPE)
 		return;
 
 	int temp;

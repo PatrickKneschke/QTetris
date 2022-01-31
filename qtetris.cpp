@@ -84,30 +84,39 @@ void QTetris::getNextPiece() {
 
 
 void QTetris::moveLeft() {
-	if(currPiece->left > 0)
-		currPiece->moveBy(-1, 0);
+	currPiece->moveBy(-1, 0);
+	if(currPiece->left < 0 || !mainScene->collidingItems(currPiece).isEmpty())
+		currPiece->moveBy(1, 0);
+		
 	mainScene->update(0, 0, boardWidth*Piece::blockSize, boardHeight*Piece::blockSize);
 }
 
 
 void QTetris::moveRight() {
-	if(currPiece->right < boardWidth)
-		currPiece->moveBy(1, 0);	
+	currPiece->moveBy(1, 0);
+	if(currPiece->right > boardWidth || !mainScene->collidingItems(currPiece).isEmpty())
+		currPiece->moveBy(-1, 0);
+		
 	mainScene->update(0, 0, boardWidth*Piece::blockSize, boardHeight*Piece::blockSize);
 }
 
 
 void QTetris::moveDown() {
-	// TODO
-	if(currPiece->bottom < boardHeight)
-		currPiece->moveBy(0, 1);
+	currPiece->moveBy(0, 1);		
+	if(currPiece->bottom > boardHeight || !mainScene->collidingItems(currPiece).isEmpty()) {
+		currPiece->moveBy(0, -1);
+		currPiece->addBlocksToScene(mainScene);	
+		getNextPiece();
+	}
+		
 	mainScene->update(0, 0, boardWidth*Piece::blockSize, boardHeight*Piece::blockSize);
 }
 
 
 void QTetris::drop() {
-	//TODO
-	currPiece->moveBy(0, boardHeight-currPiece->bottom);
+	while(currPiece->bottom <= boardHeight && mainScene->collidingItems(currPiece).isEmpty())
+		currPiece->moveBy(0, 1);
+	currPiece->moveBy(0, -1);
 	
 	currPiece->addBlocksToScene(mainScene);	
 	getNextPiece();
@@ -115,7 +124,9 @@ void QTetris::drop() {
 
 
 void QTetris::rotate() {
-	//TODO
-	currPiece->rotate();
+	currPiece->rotateRight();
+	if(currPiece->left<0 || currPiece->right>boardWidth || currPiece->bottom>boardHeight || !mainScene->collidingItems(currPiece).isEmpty())
+		currPiece->rotateLeft();
+		
 	mainScene->update(0, 0, boardWidth*Piece::blockSize, boardHeight*Piece::blockSize);
 }

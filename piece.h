@@ -18,6 +18,7 @@ class Piece : public QGraphicsItem {
 
 public:
 	QRectF boundingRect() const override;
+	QPainterPath shape() const override;
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;	
 	
 	static Piece* newPiece(const int &x, const int &y);	
@@ -26,7 +27,8 @@ public:
 	
 	void moveTo(const int &newX, const int &newY);
 	void moveBy(const int &dx, const int &dy);
-	void rotate();	
+	void rotateLeft();
+	void rotateRight();	
 	
 	static int blockSize;
 	
@@ -37,7 +39,7 @@ public:
 private:
 	Piece(const int &x, const int &y, Shape s);
 	
-	Shape shape;
+	Shape pieceShape;
 	QColor color;
 };
 

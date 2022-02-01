@@ -58,17 +58,9 @@ QPainterPath Piece::shape() const {
 
 
 void Piece::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
-
-		painter->drawRect(boundingRect());
-
 	painter->setBrush(color);
 	for(int i=0; i<4; i++)
 		painter->drawRect((x + blockPos[i][0])*blockSize, (y + blockPos[i][1])*blockSize, blockSize, blockSize);
-		
-		
-		painter->setPen(QColor(200, 200, 200));
-		painter->drawPath(shape());
-		painter->setPen(QColor());
 }
 
 

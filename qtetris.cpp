@@ -63,7 +63,7 @@ void QTetris::initBoard() {
 	mainScene->addItem(currPiece);
 	
 	nextPiece = Piece::newPiece(2, 2);
-	nextPieceScene->addItem(nextPiece);
+	nextPieceScene->addItem(nextPiece);	
 }
 
 
@@ -78,8 +78,8 @@ void QTetris::getNextPiece() {
 	nextPiece = Piece::newPiece(2, 2);
 	nextPieceScene->addItem(nextPiece);
 
-	mainScene->update(0, 0, boardWidth*Piece::blockSize, boardHeight*Piece::blockSize);
-	nextPieceScene->update(0, 0, 4*Piece::blockSize, 4*Piece::blockSize);
+	mainScene->update();
+	nextPieceScene->update();
 }
 
 
@@ -88,7 +88,7 @@ void QTetris::moveLeft() {
 	if(currPiece->left < 0 || !mainScene->collidingItems(currPiece).isEmpty())
 		currPiece->moveBy(1, 0);
 		
-	mainScene->update(0, 0, boardWidth*Piece::blockSize, boardHeight*Piece::blockSize);
+	mainScene->update();
 }
 
 
@@ -97,7 +97,7 @@ void QTetris::moveRight() {
 	if(currPiece->right > boardWidth || !mainScene->collidingItems(currPiece).isEmpty())
 		currPiece->moveBy(-1, 0);
 		
-	mainScene->update(0, 0, boardWidth*Piece::blockSize, boardHeight*Piece::blockSize);
+	mainScene->update();
 }
 
 
@@ -105,11 +105,10 @@ void QTetris::moveDown() {
 	currPiece->moveBy(0, 1);		
 	if(currPiece->bottom > boardHeight || !mainScene->collidingItems(currPiece).isEmpty()) {
 		currPiece->moveBy(0, -1);
-		currPiece->addBlocksToScene(mainScene);	
-		getNextPiece();
+		touchdown();
 	}
 		
-	mainScene->update(0, 0, boardWidth*Piece::blockSize, boardHeight*Piece::blockSize);
+	mainScene->update();
 }
 
 
@@ -117,9 +116,7 @@ void QTetris::drop() {
 	while(currPiece->bottom <= boardHeight && mainScene->collidingItems(currPiece).isEmpty())
 		currPiece->moveBy(0, 1);
 	currPiece->moveBy(0, -1);
-	
-	currPiece->addBlocksToScene(mainScene);	
-	getNextPiece();
+	mainScene->update();
 }
 
 
@@ -128,5 +125,39 @@ void QTetris::rotate() {
 	if(currPiece->left<0 || currPiece->right>boardWidth || currPiece->bottom>boardHeight || !mainScene->collidingItems(currPiece).isEmpty())
 		currPiece->rotateLeft();
 		
-	mainScene->update(0, 0, boardWidth*Piece::blockSize, boardHeight*Piece::blockSize);
+	mainScene->update();
+}
+
+
+void QTetris::touchdown() {
+	currPiece->addBlocksToScene(mainScene);	
+	
+	//check for completed lines
+	QGraphicsLineItem line(0, 0, boardWidth*Piece::blockSize, 0);
+	int removedLines = 0;
+	for(int row=currPiece->bottom; row>currPiece->top; row--) {
+		line.setY((row - 0.5)*Piece::blockSize);
+		auto blocksOnLine = mainScene->collidingItems(&line);
+		if(blocksOnLine.size() == boardWidth) {
+			for(auto block : blocksOnLine) 
+				mainScene->removeItem(block);
+			++removedLines;
+		}
+		else if(removedLines > 0) {
+			for(auto block : blocksOnLine) 
+				block->moveBy(0, removedLines*Piece::blockSize);
+		}
+	}
+	for(int row=currPiece->top; row>0; --row) {
+		line.setY((row - 0.5)*Piece::blockSize);
+		auto blocksOnLine = mainScene->collidingItems(&line);
+		for(auto block : blocksOnLine) 
+			block->moveBy(0, removedLines*Piece::blockSize);
+	}
+	
+	// only way to clear removed blocks from view ???
+	mainScene->setSceneRect(mainScene->sceneRect().adjusted(1,0,0,0));
+	mainScene->setSceneRect(mainScene->sceneRect().adjusted(-1,0,0,0));
+	
+	getNextPiece();
 }

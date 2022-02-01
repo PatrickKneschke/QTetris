@@ -29,6 +29,7 @@ private:
 	void moveDown();
 	void drop();
 	void rotate();
+	void touchdown();
 	
 
 	UI::QTetris *ui;

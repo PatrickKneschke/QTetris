@@ -36,9 +36,8 @@ private:
 	QGraphicsScene *mainScene, *nextPieceScene;
 	QTimer *updateTimer;
 	Piece *currPiece, *nextPiece;
-	
 	int boardWidth, boardHeight;
-				   
+	int score, lines, level, nextLevelLines;
 	
 };
 

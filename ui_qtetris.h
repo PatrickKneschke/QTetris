@@ -27,7 +27,7 @@ public:
 		scoreLabel 		= new QLabel("Score", parent);
 		scoreLabel->setAlignment(Qt::AlignCenter);
 		scoreLabel->setFont(QFont("Arial", 12, QFont::Bold));
-		linesLabel 		= new QLabel("Highscore", parent);
+		linesLabel 		= new QLabel("Lines", parent);
 		linesLabel->setAlignment(Qt::AlignCenter);
 		linesLabel->setFont(QFont("Arial", 12, QFont::Bold));
 		levelLabel 		= new QLabel("Level", parent);

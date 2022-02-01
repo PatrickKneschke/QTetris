@@ -11,7 +11,11 @@ QTetris::QTetris(QWidget *parent) :
 	currPiece(nullptr),
 	nextPiece(nullptr),
 	boardWidth(10),
-	boardHeight(20)
+	boardHeight(20),
+	score(0),
+	lines(0),
+	level(0),
+	nextLevelLines(20)
 {
 	ui->setupUI(this);
 	setMinimumSize(16*Piece::blockSize, 22*Piece::blockSize);
@@ -56,14 +60,13 @@ void QTetris::initBoard() {
 	
 	nextPieceScene = new QGraphicsScene(0, 0, 4*Piece::blockSize, 4*Piece::blockSize, this);
 	ui->nextPieceView->setScene(nextPieceScene);
-	ui->nextPieceView->resize(nextPieceScene->width(), nextPieceScene->height());
-	
+	ui->nextPieceView->resize(nextPieceScene->width(), nextPieceScene->height());	
 	
 	currPiece = Piece::newPiece(boardWidth/2, 0);
 	mainScene->addItem(currPiece);
 	
 	nextPiece = Piece::newPiece(2, 2);
-	nextPieceScene->addItem(nextPiece);	
+	nextPieceScene->addItem(nextPiece);
 }
 
 
@@ -155,9 +158,24 @@ void QTetris::touchdown() {
 			block->moveBy(0, removedLines*Piece::blockSize);
 	}
 	
+	// update score, lines, level
+	if(removedLines > 0) {
+		lines += removedLines;
+		score += 5*(1 + level)*(1 + removedLines);
+		if(lines >= nextLevelLines) {
+			++level;
+			updateTimer->setInterval(5000/(5 + level));
+			nextLevelLines += 20;
+		}
+		ui->scoreLCD->display(score);
+		ui->linesLCD->display(lines);
+		ui->levelLCD->display(level);
+	}
+	
 	// only way to clear removed blocks from view ???
 	mainScene->setSceneRect(mainScene->sceneRect().adjusted(1,0,0,0));
 	mainScene->setSceneRect(mainScene->sceneRect().adjusted(-1,0,0,0));
+	
 	
 	getNextPiece();
 }

@@ -5,6 +5,7 @@
 #include "piece.h"
 #include <QGraphicsScene>
 #include <QKeyEvent>
+#include <QSound>
 #include <QWidget>
 
 
@@ -20,7 +21,8 @@ public:
 	
 private:
 	void keyPressEvent(QKeyEvent *event) override;
-
+	
+	void setupSound();
 	void initBoard();
 	void getNextPiece();
 	
@@ -38,6 +40,12 @@ private:
 	Piece *currPiece, *nextPiece;
 	int boardWidth, boardHeight;
 	int score, lines, level, nextLevelLines;
+	
+	QSound *blockMoveSound, 
+		   *blockRotateSound, 
+		   *blockTouchdownSound,
+		   *lineClearSound, 
+		   *levelUpSound;
 	
 };
 

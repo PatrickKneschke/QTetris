@@ -22,6 +22,7 @@ QTetris::QTetris(QWidget *parent) :
 	setMaximumSize(16*Piece::blockSize, 22*Piece::blockSize);
 	setFocus();
 	
+	setupSound();	
 	initBoard();
 	
 	updateTimer = new QTimer();
@@ -38,18 +39,31 @@ QTetris::~QTetris() {
 void QTetris::keyPressEvent(QKeyEvent *event) {
 	switch(event->key()) {
 		case Qt::Key_Left :
+			blockMoveSound->play();
 			moveLeft();
 			break;
 		case Qt::Key_Right :
+			blockMoveSound->play();
 			moveRight();
 			break;
 		case Qt::Key_Down :
+			blockMoveSound->play();
 			drop();
 			break;
 		case Qt::Key_Up :
+			blockRotateSound->play();
 			rotate();
 			break;
 	}
+}
+
+
+void QTetris::setupSound() {
+	blockMoveSound = new QSound("block_move.wav", this);
+	blockRotateSound = new QSound("block_rotate.wav", this);
+	blockTouchdownSound = new QSound("block_touchdown.wav", this);
+	lineClearSound = new QSound("line_clear.wav", this);
+	levelUpSound = new QSound("level_up.wav", this);
 }
 
 
@@ -104,19 +118,18 @@ void QTetris::moveLeft() {
 void QTetris::moveRight() {
 	currPiece->moveBy(1, 0);
 	if(currPiece->right > boardWidth || !mainScene->collidingItems(currPiece).isEmpty())
-		currPiece->moveBy(-1, 0);
-		
+		currPiece->moveBy(-1, 0);		
 	mainScene->update();
 }
 
 
 void QTetris::moveDown() {
+	blockMoveSound->play();
 	currPiece->moveBy(0, 1);		
 	if(currPiece->bottom > boardHeight || !mainScene->collidingItems(currPiece).isEmpty()) {
 		currPiece->moveBy(0, -1);
 		touchdown();
-	}
-		
+	}		
 	mainScene->update();
 }
 
@@ -133,12 +146,12 @@ void QTetris::rotate() {
 	currPiece->rotateRight();
 	if(currPiece->left<0 || currPiece->right>boardWidth || currPiece->bottom>boardHeight || !mainScene->collidingItems(currPiece).isEmpty())
 		currPiece->rotateLeft();
-		
 	mainScene->update();
 }
 
 
 void QTetris::touchdown() {
+	blockTouchdownSound->play();
 	currPiece->addBlocksToScene(mainScene);	
 	
 	//check for completed lines
@@ -166,9 +179,11 @@ void QTetris::touchdown() {
 	
 	// update score, lines, level
 	if(removedLines > 0) {
+		lineClearSound->play();
 		lines += removedLines;
 		score += 5*(1 + level)*(1 + removedLines);
 		if(lines >= nextLevelLines) {
+			levelUpSound->play();
 			++level;
 			updateTimer->setInterval(5000/(5 + level));
 			nextLevelLines += 20;

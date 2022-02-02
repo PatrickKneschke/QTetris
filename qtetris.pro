@@ -1,7 +1,7 @@
 TARGET  = qtetris
 
 TEMPLATE = app
-QT		+= widgets
+QT		+= widgets multimedia
 
 DEFINES += QT_DEPRECATED_WARNINGS
 

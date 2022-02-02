@@ -65,7 +65,10 @@ void QTetris::initBoard() {
 	currPiece = Piece::newPiece(boardWidth/2, 0);
 	mainScene->addItem(currPiece);
 	
-	nextPiece = Piece::newPiece(2, 2);
+	nextPiece = Piece::newPiece(0, 0);
+	nextPiece->moveBy(1-nextPiece->left, 1-nextPiece->top);
+	if(nextPiece->bottom > 4)
+		nextPiece->moveBy(0, -1);
 	nextPieceScene->addItem(nextPiece);
 }
 
@@ -78,7 +81,10 @@ void QTetris::getNextPiece() {
 	currPiece->moveTo(boardWidth/2, 0);
 	mainScene->addItem(currPiece);
 	
-	nextPiece = Piece::newPiece(2, 2);
+	nextPiece = Piece::newPiece(0, 0);
+	nextPiece->moveBy(1-nextPiece->left, 1-nextPiece->top);
+	if(nextPiece->bottom > 4)
+		nextPiece->moveBy(0, -1);
 	nextPieceScene->addItem(nextPiece);
 
 	mainScene->update();

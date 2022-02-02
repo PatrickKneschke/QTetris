@@ -15,7 +15,8 @@ QTetris::QTetris(QWidget *parent) :
 	score(0),
 	lines(0),
 	level(0),
-	nextLevelLines(20)
+	nextLevelLines(20),
+	gameover(false)
 {
 	ui->setupUI(this);
 	setMinimumSize(16*Piece::blockSize, 22*Piece::blockSize);
@@ -37,6 +38,9 @@ QTetris::~QTetris() {
 
 
 void QTetris::keyPressEvent(QKeyEvent *event) {
+	if(gameover)
+		return;
+		
 	switch(event->key()) {
 		case Qt::Key_Left :
 			blockMoveSound->play();
@@ -54,6 +58,9 @@ void QTetris::keyPressEvent(QKeyEvent *event) {
 			blockRotateSound->play();
 			rotate();
 			break;
+		default:
+			QWidget::keyPressEvent(event);
+			break;
 	}
 }
 
@@ -64,6 +71,7 @@ void QTetris::setupSound() {
 	blockTouchdownSound = new QSound("block_touchdown.wav", this);
 	lineClearSound = new QSound("line_clear.wav", this);
 	levelUpSound = new QSound("level_up.wav", this);
+	gameoverSound = new QSound("gameover.wav", this);
 }
 
 
@@ -103,6 +111,13 @@ void QTetris::getNextPiece() {
 
 	mainScene->update();
 	nextPieceScene->update();
+}
+
+
+void QTetris::handleGameover() {
+	gameover = true;
+	gameoverSound->play();
+	updateTimer->stop();
 }
 
 
@@ -151,6 +166,12 @@ void QTetris::rotate() {
 
 
 void QTetris::touchdown() {
+	// check for gameover
+	if(currPiece->top < 0) {
+		handleGameover();
+		return;
+	}
+
 	blockTouchdownSound->play();
 	currPiece->addBlocksToScene(mainScene);	
 	

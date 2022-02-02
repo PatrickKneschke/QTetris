@@ -25,6 +25,7 @@ private:
 	void setupSound();
 	void initBoard();
 	void getNextPiece();
+	void handleGameover();
 	
 	void moveLeft();
 	void moveRight();
@@ -37,15 +38,18 @@ private:
 	UI::QTetris *ui;
 	QGraphicsScene *mainScene, *nextPieceScene;
 	QTimer *updateTimer;
+	
 	Piece *currPiece, *nextPiece;
 	int boardWidth, boardHeight;
 	int score, lines, level, nextLevelLines;
+	bool gameover;
 	
 	QSound *blockMoveSound, 
 		   *blockRotateSound, 
 		   *blockTouchdownSound,
 		   *lineClearSound, 
-		   *levelUpSound;
+		   *levelUpSound,
+		   *gameoverSound;
 	
 };
 

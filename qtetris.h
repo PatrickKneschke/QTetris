@@ -40,7 +40,7 @@ private:
 	QTimer *updateTimer;
 	
 	Piece *currPiece, *nextPiece;
-	int boardWidth, boardHeight;
+	int boardWidth, boardHeight, unit;
 	int score, lines, level, nextLevelLines;
 	bool gameover;
 	

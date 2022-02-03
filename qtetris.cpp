@@ -1,7 +1,6 @@
 
 #include <qtetris.h>
 #include <ui_qtetris.h>
-
 #include <QApplication>
 
 
@@ -12,6 +11,7 @@ QTetris::QTetris(QWidget *parent) :
 	nextPiece(nullptr),
 	boardWidth(10),
 	boardHeight(20),
+	unit(Piece::blockSize),
 	score(0),
 	lines(0),
 	level(0),
@@ -19,8 +19,8 @@ QTetris::QTetris(QWidget *parent) :
 	gameover(false)
 {
 	ui->setupUI(this);
-	setMinimumSize(16*Piece::blockSize, 22*Piece::blockSize);
-	setMaximumSize(16*Piece::blockSize, 22*Piece::blockSize);
+	setMinimumSize(16*unit, 22*unit);
+	setMaximumSize(16*unit, 22*unit);
 	setFocus();
 	
 	setupSound();	
@@ -76,41 +76,34 @@ void QTetris::setupSound() {
 
 
 void QTetris::initBoard() {
-	mainScene = new QGraphicsScene(0, 0, boardWidth*Piece::blockSize, boardHeight*Piece::blockSize, this);
+	mainScene = new QGraphicsScene(0, 0, boardWidth*unit, boardHeight*unit, this);
 	ui->mainView->setScene(mainScene);
 	ui->mainView->resize(mainScene->width(), mainScene->height());
 	
-	nextPieceScene = new QGraphicsScene(0, 0, 4*Piece::blockSize, 4*Piece::blockSize, this);
+	nextPieceScene = new QGraphicsScene(0, 0, 4*unit, 4*unit, this);
 	ui->nextPieceView->setScene(nextPieceScene);
 	ui->nextPieceView->resize(nextPieceScene->width(), nextPieceScene->height());	
 	
-	currPiece = Piece::newPiece(boardWidth/2, 0);
+	currPiece = Piece::newPiece();
 	mainScene->addItem(currPiece);
+	currPiece->setPos(boardWidth*unit/2, 0);
 	
-	nextPiece = Piece::newPiece(0, 0);
-	nextPiece->moveBy(1-nextPiece->left, 1-nextPiece->top);
-	if(nextPiece->bottom > 4)
-		nextPiece->moveBy(0, -1);
+	nextPiece = Piece::newPiece();
 	nextPieceScene->addItem(nextPiece);
+	nextPiece->setPos(unit, unit);
 }
 
 
 void QTetris::getNextPiece() {
-	mainScene->removeItem(currPiece);
 	nextPieceScene->removeItem(nextPiece);
 
 	currPiece = nextPiece;
-	currPiece->moveTo(boardWidth/2, 0);
 	mainScene->addItem(currPiece);
+	currPiece->setPos(boardWidth*unit/2, 0);
 	
-	nextPiece = Piece::newPiece(0, 0);
-	nextPiece->moveBy(1-nextPiece->left, 1-nextPiece->top);
-	if(nextPiece->bottom > 4)
-		nextPiece->moveBy(0, -1);
+	nextPiece = Piece::newPiece();
 	nextPieceScene->addItem(nextPiece);
-
-	mainScene->update();
-	nextPieceScene->update();
+	nextPiece->setPos(unit, unit);
 }
 
 
@@ -122,44 +115,43 @@ void QTetris::handleGameover() {
 
 
 void QTetris::moveLeft() {
-	currPiece->moveBy(-1, 0);
-	if(currPiece->left < 0 || !mainScene->collidingItems(currPiece).isEmpty())
-		currPiece->moveBy(1, 0);
-		
-	mainScene->update();
+	currPiece->moveBy(-unit, 0);
+	if(currPiece->x() + currPiece->box.left() < 0 || !mainScene->collidingItems(currPiece).isEmpty())
+		currPiece->moveBy(unit, 0);
 }
 
 
 void QTetris::moveRight() {
-	currPiece->moveBy(1, 0);
-	if(currPiece->right > boardWidth || !mainScene->collidingItems(currPiece).isEmpty())
-		currPiece->moveBy(-1, 0);		
-	mainScene->update();
+	currPiece->moveBy(unit, 0);
+	if(currPiece->x() + currPiece->box.right() > boardWidth*unit || !mainScene->collidingItems(currPiece).isEmpty())
+		currPiece->moveBy(-unit, 0);
 }
 
 
 void QTetris::moveDown() {
 	blockMoveSound->play();
-	currPiece->moveBy(0, 1);		
-	if(currPiece->bottom > boardHeight || !mainScene->collidingItems(currPiece).isEmpty()) {
-		currPiece->moveBy(0, -1);
+	
+	currPiece->moveBy(0, unit);		
+	if(currPiece->y() + currPiece->box.bottom() > boardHeight*unit || !mainScene->collidingItems(currPiece).isEmpty()) {
+		currPiece->moveBy(0, -unit);
 		touchdown();
-	}		
-	mainScene->update();
+	}
 }
 
 
 void QTetris::drop() {
-	while(currPiece->bottom <= boardHeight && mainScene->collidingItems(currPiece).isEmpty())
-		currPiece->moveBy(0, 1);
-	currPiece->moveBy(0, -1);
-	mainScene->update();
+	while(currPiece->y() + currPiece->box.bottom() <= boardHeight*unit && mainScene->collidingItems(currPiece).isEmpty())
+		currPiece->moveBy(0, unit);
+	currPiece->moveBy(0, -unit);
 }
 
 
 void QTetris::rotate() {
 	currPiece->rotateRight();
-	if(currPiece->left<0 || currPiece->right>boardWidth || currPiece->bottom>boardHeight || !mainScene->collidingItems(currPiece).isEmpty())
+	if(currPiece->x() + currPiece->box.left() < 0 || 
+	   currPiece->x() + currPiece->box.right() > boardWidth*unit || 
+	   currPiece->y() + currPiece->box.bottom() > boardHeight*unit || 
+	   !mainScene->collidingItems(currPiece).isEmpty())
 		currPiece->rotateLeft();
 	mainScene->update();
 }
@@ -167,19 +159,20 @@ void QTetris::rotate() {
 
 void QTetris::touchdown() {
 	// check for gameover
-	if(currPiece->top < 0) {
+	if(currPiece->y() + currPiece->box.top() < 0) {
 		handleGameover();
 		return;
 	}
 
 	blockTouchdownSound->play();
-	currPiece->addBlocksToScene(mainScene);	
+	currPiece->addBlocksToScene(mainScene);
+	mainScene->removeItem(currPiece);
 	
 	//check for completed lines
-	QGraphicsLineItem line(0, 0, boardWidth*Piece::blockSize, 0);
+	QGraphicsLineItem line(0, 0, boardWidth*unit, 0);
 	int removedLines = 0;
-	for(int row=currPiece->bottom; row>currPiece->top; row--) {
-		line.setY((row - 0.5)*Piece::blockSize);
+	for(int row = currPiece->y() + currPiece->box.bottom(); row>currPiece->y() + currPiece->box.top(); row-=unit) {
+		line.setY(row - unit/2);		
 		auto blocksOnLine = mainScene->collidingItems(&line);
 		if(blocksOnLine.size() == boardWidth) {
 			for(auto block : blocksOnLine) 
@@ -188,14 +181,14 @@ void QTetris::touchdown() {
 		}
 		else if(removedLines > 0) {
 			for(auto block : blocksOnLine) 
-				block->moveBy(0, removedLines*Piece::blockSize);
+				block->moveBy(0, removedLines*unit);
 		}
 	}
-	for(int row=currPiece->top; row>0; --row) {
-		line.setY((row - 0.5)*Piece::blockSize);
+	for(int row=currPiece->y() + currPiece->box.top(); row>0; row-=unit) {
+		line.setY(row - unit/2);
 		auto blocksOnLine = mainScene->collidingItems(&line);
 		for(auto block : blocksOnLine) 
-			block->moveBy(0, removedLines*Piece::blockSize);
+			block->moveBy(0, removedLines*unit);
 	}
 	
 	// update score, lines, level
@@ -216,8 +209,7 @@ void QTetris::touchdown() {
 	
 	// only way to clear removed blocks from view ???
 	mainScene->setSceneRect(mainScene->sceneRect().adjusted(1,0,0,0));
-	mainScene->setSceneRect(mainScene->sceneRect().adjusted(-1,0,0,0));
-	
+	mainScene->setSceneRect(mainScene->sceneRect().adjusted(-1,0,0,0));	
 	
 	getNextPiece();
 }

@@ -27,107 +27,78 @@ const QColor Piece::colorTable[6]  = {
 int Piece::blockSize = 50;
 
 
-Piece::Piece(const int &x_, const int &y_, Shape s) : 
-	x(x_), y(y_),
-	left(INT_MAX), right(INT_MIN), top(INT_MAX), bottom(INT_MIN),
-	pieceShape(s)
+Piece::Piece(Shape s, QColor c) : 
+	color(c),
+	pieceShape(s) 
 {
+	int left = INT_MAX, right = INT_MIN, top = INT_MAX, bottom = INT_MIN;
 	for(int i=0; i<4; i++) {
-		blockPos[i][0] = shapePosTable[pieceShape][i][0];
-		blockPos[i][1] = shapePosTable[pieceShape][i][1];
-		left   = qMin(left,   x + blockPos[i][0]);
-		right  = qMax(right,  x + blockPos[i][0]+1);
-		top    = qMin(top,    y + blockPos[i][1]);
-		bottom = qMax(bottom, y + blockPos[i][1]+1);
+		blockPos[i][0] = shapePosTable[pieceShape][i][0]*blockSize;
+		blockPos[i][1] = shapePosTable[pieceShape][i][1]*blockSize;
+		left 	= qMin(left,   blockPos[i][0]);
+		top  	= qMin(top,    blockPos[i][1]);
+		right 	= qMax(right,  blockPos[i][0] + blockSize);
+		bottom  = qMax(bottom, blockPos[i][1] + blockSize);
 	}
+	box.setRect(left, top, right-left, bottom-top);
 }
 
 
 QRectF Piece::boundingRect() const {
-	return QRectF(left*blockSize, top*blockSize, (right-left)*blockSize, (bottom-top)*blockSize);
+	return box;
 }
 
 
 QPainterPath Piece::shape() const {
 	QPainterPath path;
 	for(int i=0; i<4; i++) {
-		path.addRect((x + blockPos[i][0])*blockSize + 1, (y + blockPos[i][1])*blockSize + 1, blockSize - 2, blockSize - 2);
+		path.addRect(blockPos[i][0] + 1, blockPos[i][1] + 1, blockSize - 2, blockSize - 2);
 	}
 	return path;
 }
 
 
-void Piece::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+void Piece::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {	
 	painter->setBrush(color);
 	for(int i=0; i<4; i++)
-		painter->drawRect((x + blockPos[i][0])*blockSize, (y + blockPos[i][1])*blockSize, blockSize, blockSize);
+		painter->drawRect(blockPos[i][0], blockPos[i][1], blockSize, blockSize);
 }
 
 
-Piece* Piece::newPiece(const int &x, const int &y) {
-	Piece *piece = new Piece(x, y, Shape(QRandomGenerator::global()->bounded(7)));
-	piece->color = colorTable[QRandomGenerator::global()->bounded(6)];
-	return piece;
+Piece* Piece::newPiece() {
+	return new Piece(Shape(QRandomGenerator::global()->bounded(7)), colorTable[QRandomGenerator::global()->bounded(6)]);
 }
 
 
 void Piece::addBlocksToScene(QGraphicsScene *scene) {
 	for(int i=0; i<4; i++)
-		scene->addRect((x + blockPos[i][0])*blockSize, (y+blockPos[i][1])*blockSize, blockSize, blockSize, QPen(), QBrush(color));
-}
-
-
-void Piece::moveTo(const int &newX, const int &newY) {
-	left   += newX - x;
-	right  += newX - x;
-	top    += newY - y;
-	bottom += newY - y;
-	x = newX;
-	y = newY;
-}
-
-
-void Piece::moveBy(const int &dx, const int &dy) {
-	x += dx;
-	y += dy;
-	left   += dx;
-	right  += dx;
-	top    += dy;
-	bottom += dy;
+		scene->addRect(x() + blockPos[i][0], y() + blockPos[i][1], blockSize, blockSize, QPen(), QBrush(color));
 }
 
 
 void Piece::rotateLeft() {
 	if(pieceShape == O_SHAPE)
 		return;
-
+		
 	int temp;
 	for(int i=0; i<4; i++) {
 		temp = blockPos[i][0];
 		blockPos[i][0] = blockPos[i][1];
 		blockPos[i][1] = -temp;
 	}
-	temp   = left;
-	left   = x + (top    - y);
-	top    = y - (right  - x - 1);
-	right  = x + (bottom - y);
-	bottom = y - (temp   - x - 1);
+	box.setRect(box.top(), -(box.right()-blockSize), box.height(), box.width());	
 }
 
 
 void Piece::rotateRight() {
 	if(pieceShape == O_SHAPE)
 		return;
-
+		
 	int temp;
 	for(int i=0; i<4; i++) {
 		temp = blockPos[i][0];
 		blockPos[i][0] = -blockPos[i][1];
 		blockPos[i][1] = temp;
 	}
-	temp   = left;
-	left   = x - (bottom - y - 1);
-	bottom = y + (right  - x);
-	right  = x - (top    - y - 1);
-	top    = y + (temp   - x);
+	box.setRect(-(box.bottom() - blockSize), box.left(), box.height(), box.width());
 }

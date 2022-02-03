@@ -21,26 +21,20 @@ public:
 	QPainterPath shape() const override;
 	void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;	
 	
-	static Piece* newPiece(const int &x, const int &y);	
+	static Piece* newPiece();	
 	
 	void addBlocksToScene(QGraphicsScene *scene);
-	
-	void moveTo(const int &newX, const int &newY);
-	void moveBy(const int &dx, const int &dy);
 	void rotateLeft();
 	void rotateRight();	
 	
 	static int blockSize;
-	
-	int x, y;	
-	int blockPos[4][2];
-	int left, right, top, bottom;
-	
-private:
-	Piece(const int &x, const int &y, Shape s);
-	
-	Shape pieceShape;
 	QColor color;
+	QRectF box;
+		
+private:
+	Piece(Shape s, QColor c);	
+	int blockPos[4][2];
+	Shape pieceShape;
 };
 
 

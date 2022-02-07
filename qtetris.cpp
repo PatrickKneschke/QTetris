@@ -209,7 +209,8 @@ void QTetris::touchdown() {
 	
 	// only way to clear removed blocks from view ???
 	mainScene->setSceneRect(mainScene->sceneRect().adjusted(1,0,0,0));
-	mainScene->setSceneRect(mainScene->sceneRect().adjusted(-1,0,0,0));	
+	mainScene->setSceneRect(mainScene->sceneRect().adjusted(-1,0,0,0));
+	mainScene->update();
 	
 	getNextPiece();
 }
